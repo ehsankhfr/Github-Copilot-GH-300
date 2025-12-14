@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Exam, Question, QuestionType, UserAnswer } from '../types';
-import { Clock, CheckCircle2, Circle, ChevronRight, ChevronLeft, Flag } from 'lucide-react';
+import { CheckCircle2, ChevronLeft, ChevronRight, Clock, Flag } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Exam, QuestionType, UserAnswer } from '../types';
 
 interface ExamTakerProps {
   exam: Exam;
@@ -64,6 +64,17 @@ const ExamTaker: React.FC<ExamTakerProps> = ({ exam, onSubmit }) => {
   const currentQuestion = exam.questions[currentQuestionIndex];
   const progress = ((Object.keys(answers).length) / exam.questions.length) * 100;
 
+  // Debug: Log current question details
+  useEffect(() => {
+    console.log('Current Question:', {
+      type: currentQuestion.type,
+      question: currentQuestion.question,
+      options: currentQuestion.options,
+      hasOptions: !!currentQuestion.options,
+      optionsLength: currentQuestion.options?.length
+    });
+  }, [currentQuestionIndex]);
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-6 min-h-screen flex flex-col">
       {/* Header / Top Bar */}
@@ -103,27 +114,44 @@ const ExamTaker: React.FC<ExamTakerProps> = ({ exam, onSubmit }) => {
           <div className="space-y-4">
             {(currentQuestion.type === QuestionType.MultipleChoice || currentQuestion.type === QuestionType.TrueFalse) ? (
               <div className="grid grid-cols-1 gap-4">
-                {(currentQuestion.options || (currentQuestion.type === QuestionType.TrueFalse ? ["True", "False"] : [])).map((option, idx) => {
-                   const isSelected = answers[currentQuestion.id] === option;
-                   return (
-                    <button
-                      key={idx}
-                      onClick={() => handleAnswer(option)}
-                      className={`w-full text-left p-5 rounded-xl border transition-all duration-200 group flex items-center gap-4 ${
-                        isSelected 
-                          ? 'bg-indigo-600/10 border-indigo-500 text-indigo-100 shadow-inner' 
-                          : 'bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:border-slate-600'
-                      }`}
-                    >
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                        isSelected ? 'border-indigo-500 bg-indigo-500' : 'border-slate-500 group-hover:border-slate-400'
-                      }`}>
-                        {isSelected && <CheckCircle2 className="w-4 h-4 text-white" />}
-                      </div>
-                      <span className="text-lg">{option}</span>
-                    </button>
-                   );
-                })}
+                {(() => {
+                  // Determine options to display
+                  let optionsToDisplay: string[] = [];
+                  
+                  if (currentQuestion.type === QuestionType.TrueFalse) {
+                    // For true/false questions, always use ["True", "False"]
+                    optionsToDisplay = currentQuestion.options && currentQuestion.options.length === 2 
+                      ? currentQuestion.options 
+                      : ["True", "False"];
+                  } else {
+                    // For multiple choice, use provided options or empty array
+                    optionsToDisplay = currentQuestion.options || [];
+                  }
+                  
+                  console.log('Rendering options:', optionsToDisplay);
+                  
+                  return optionsToDisplay.map((option, idx) => {
+                    const isSelected = answers[currentQuestion.id] === option;
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => handleAnswer(option)}
+                        className={`w-full text-left p-5 rounded-xl border transition-all duration-200 group flex items-center gap-4 ${
+                          isSelected 
+                            ? 'bg-indigo-600/10 border-indigo-500 text-indigo-100 shadow-inner' 
+                            : 'bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:border-slate-600'
+                        }`}
+                      >
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                          isSelected ? 'border-indigo-500 bg-indigo-500' : 'border-slate-500 group-hover:border-slate-400'
+                        }`}>
+                          {isSelected && <CheckCircle2 className="w-4 h-4 text-white" />}
+                        </div>
+                        <span className="text-lg">{option}</span>
+                      </button>
+                    );
+                  });
+                })()}
               </div>
             ) : (
               <div className="space-y-2">

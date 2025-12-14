@@ -22,7 +22,7 @@ const examSchema = {
           options: { 
             type: Type.ARRAY, 
             items: { type: Type.STRING },
-            description: "Provide 4 options for multiple choice. Leave empty for short answer."
+            description: "For multiple_choice: provide 4 options. For true_false: must be exactly ['True', 'False']. For short_answer: leave empty or omit."
           },
           correctAnswer: { type: Type.STRING, description: "The correct option for MC/TF, or a grading key/rubric for Short Answer." },
           explanation: { type: Type.STRING, description: "Explanation of why the answer is correct." }
@@ -60,8 +60,25 @@ export const generateExamFromContent = async (contents: {name: string, content: 
     Analyze the following markdown notes from a repository.
     Create a comprehensive exam to test a student's understanding of the core concepts, syntax, and logic presented in these files.
     
-    Mix the question types:
-    The exam is comprised of approximately 60 scored multiple-choice questions, plus an additional 10-15 pretest items that do not count towards the final score, but vary by exam.
+    Question Type Guidelines:
+    - Use 'multiple_choice' for questions with ONE correct answer from 4 options
+    - Use 'true_false' for true/false questions
+    - Use 'short_answer' for essay/written response questions
+    
+    The exam should include approximately 60 scored questions with a mix of question types.
+    
+    CRITICAL REQUIREMENTS:
+    - For 'multiple_choice' questions: 
+      * Provide exactly 4 options in the options array
+      * correctAnswer must be a single string matching one of the options
+    
+    - For 'true_false' questions: 
+      * MUST set options to exactly ["True", "False"]
+      * correctAnswer must be either "True" or "False"
+    
+    - For 'short_answer' questions: 
+      * Leave options empty or omit it
+      * correctAnswer should be a grading rubric
 
     Assessed on this exam:
     - Domain 1: Responsible AI 7%
@@ -73,7 +90,6 @@ export const generateExamFromContent = async (contents: {name: string, content: 
     - Domain 7: Privacy fundamentals and context exclusions 15%
     
     Ensure the questions are challenging but fair based ONLY on the provided text.
-    Generate at least 10 questions.
   `;
 
   try {
@@ -94,6 +110,21 @@ export const generateExamFromContent = async (contents: {name: string, content: 
     }
 
     const examData = JSON.parse(response.text) as Exam;
+    
+    // Post-process: Ensure true/false questions have correct options
+    examData.questions.forEach(q => {
+      if (q.type === QuestionType.TrueFalse) {
+        // Always set options to ["True", "False"] for true/false questions
+        q.options = ["True", "False"];
+        
+        // Normalize the correctAnswer to ensure it's exactly "True" or "False"
+        if (typeof q.correctAnswer === 'string') {
+          const normalized = q.correctAnswer.toLowerCase().trim();
+          q.correctAnswer = normalized === 'true' ? "True" : "False";
+        }
+      }
+    });
+    
     return examData;
   } catch (error) {
     console.error("Exam generation failed:", error);
