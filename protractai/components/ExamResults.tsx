@@ -1,6 +1,6 @@
+import { AlertCircle, Award, CheckCircle, ChevronDown, ChevronUp, RefreshCcw, XCircle } from 'lucide-react';
 import React from 'react';
-import { Exam, UserAnswer, QuestionType } from '../types';
-import { CheckCircle, XCircle, AlertCircle, RefreshCcw, Award, ChevronDown, ChevronUp } from 'lucide-react';
+import { Exam, QuestionType, UserAnswer } from '../types';
 
 interface ExamResultsProps {
   exam: Exam;
@@ -34,8 +34,21 @@ const ExamResults: React.FC<ExamResultsProps> = ({ exam, userAnswers, onRestart 
         } else {
             pendingCount++;
         }
+      } else if (q.type === QuestionType.MultipleSelect) {
+        // Multi-select: compare arrays
+        const userAnswerArray = Array.isArray(uAnswer.answer) ? uAnswer.answer : [];
+        const correctAnswerArray = Array.isArray(q.correctAnswer) ? q.correctAnswer : [];
+        
+        // Check if arrays match (order-independent)
+        const userSet = new Set(userAnswerArray.map(a => a.toString()));
+        const correctSet = new Set(correctAnswerArray.map(a => a.toString()));
+        
+        if (userSet.size === correctSet.size && [...userSet].every(a => correctSet.has(a))) {
+          scoreSum += 100;
+          correctCount++;
+        }
       } else {
-        // Exact match check for MC/TF
+        // Single answer check for MC/TF
         if (uAnswer.answer === q.correctAnswer) {
           scoreSum += 100; // Normalized to 100
           correctCount++;
@@ -77,7 +90,21 @@ const ExamResults: React.FC<ExamResultsProps> = ({ exam, userAnswers, onRestart 
       <div className="space-y-6">
         {exam.questions.map((q, index) => {
           const userAnswer = userAnswers.find(a => a.questionId === q.id);
-          const isCorrect = userAnswer?.isCorrect || (q.type !== QuestionType.ShortAnswer && userAnswer?.answer === q.correctAnswer);
+          
+          // Calculate if answer is correct
+          let isCorrect = false;
+          if (q.type === QuestionType.ShortAnswer) {
+            isCorrect = userAnswer?.isCorrect || false;
+          } else if (q.type === QuestionType.MultipleSelect) {
+            const userAnswerArray = Array.isArray(userAnswer?.answer) ? userAnswer.answer : [];
+            const correctAnswerArray = Array.isArray(q.correctAnswer) ? q.correctAnswer : [];
+            const userSet = new Set(userAnswerArray.map(a => a.toString()));
+            const correctSet = new Set(correctAnswerArray.map(a => a.toString()));
+            isCorrect = userSet.size === correctSet.size && [...userSet].every(a => correctSet.has(a));
+          } else {
+            isCorrect = userAnswer?.answer === q.correctAnswer;
+          }
+          
           const isPending = q.type === QuestionType.ShortAnswer && userAnswer?.score === undefined;
           
           return (
@@ -112,7 +139,7 @@ const ExamResults: React.FC<ExamResultsProps> = ({ exam, userAnswers, onRestart 
                      <p className={`mt-2 text-sm truncate ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
                         {q.type === QuestionType.ShortAnswer 
                             ? (isPending ? "Grading..." : `Score: ${userAnswer?.score}/100`) 
-                            : `Your Answer: ${userAnswer?.answer}`}
+                            : `Your Answer: ${Array.isArray(userAnswer?.answer) ? userAnswer.answer.join(', ') : userAnswer?.answer}`}
                      </p>
                   )}
                 </div>
@@ -124,13 +151,21 @@ const ExamResults: React.FC<ExamResultsProps> = ({ exam, userAnswers, onRestart 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                         <div className="bg-slate-950/50 p-4 rounded-lg border border-slate-800">
                             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Your Answer</span>
-                            <p className="text-slate-300 whitespace-pre-wrap">{userAnswer?.answer || "(No Answer)"}</p>
+                            <p className="text-slate-300 whitespace-pre-wrap">
+                              {Array.isArray(userAnswer?.answer) 
+                                ? userAnswer.answer.length > 0 ? userAnswer.answer.join(', ') : "(No selections)"
+                                : userAnswer?.answer || "(No Answer)"}
+                            </p>
                         </div>
                         <div className="bg-slate-950/50 p-4 rounded-lg border border-slate-800">
                              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">
                                 {q.type === QuestionType.ShortAnswer ? "Rubric / Key Points" : "Correct Answer"}
                              </span>
-                            <p className="text-indigo-300 whitespace-pre-wrap">{q.correctAnswer}</p>
+                            <p className="text-indigo-300 whitespace-pre-wrap">
+                              {Array.isArray(q.correctAnswer) 
+                                ? q.correctAnswer.join(', ') 
+                                : q.correctAnswer}
+                            </p>
                         </div>
                     </div>
                     

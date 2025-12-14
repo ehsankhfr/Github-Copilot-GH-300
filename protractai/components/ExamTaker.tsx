@@ -9,7 +9,7 @@ interface ExamTakerProps {
 
 const ExamTaker: React.FC<ExamTakerProps> = ({ exam, onSubmit }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [answers, setAnswers] = useState<Record<number, string | string[]>>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
 
@@ -53,11 +53,34 @@ const ExamTaker: React.FC<ExamTakerProps> = ({ exam, onSubmit }) => {
     }));
   };
 
+  const handleMultiSelectToggle = (option: string) => {
+    const questionId = exam.questions[currentQuestionIndex].id;
+    const currentAnswers = answers[questionId];
+    const answerArray = Array.isArray(currentAnswers) ? currentAnswers : [];
+    
+    if (answerArray.includes(option)) {
+      // Remove option
+      setAnswers(prev => ({
+        ...prev,
+        [questionId]: answerArray.filter(a => a !== option)
+      }));
+    } else {
+      // Add option
+      setAnswers(prev => ({
+        ...prev,
+        [questionId]: [...answerArray, option]
+      }));
+    }
+  };
+
   const handleSubmit = () => {
-    const formattedAnswers: UserAnswer[] = exam.questions.map(q => ({
-      questionId: q.id,
-      answer: answers[q.id] || ""
-    }));
+    const formattedAnswers: UserAnswer[] = exam.questions.map(q => {
+      const answer = answers[q.id];
+      return {
+        questionId: q.id,
+        answer: answer || (q.type === QuestionType.MultipleSelect ? [] : "")
+      };
+    });
     onSubmit(formattedAnswers);
   };
 
@@ -104,7 +127,9 @@ const ExamTaker: React.FC<ExamTakerProps> = ({ exam, onSubmit }) => {
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 mb-8 shadow-xl flex-1 animate-in slide-in-from-right-4 duration-300">
           <div className="mb-6">
             <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 mb-4 border border-indigo-500/20 uppercase tracking-wider">
-              {currentQuestion.type === QuestionType.MultipleChoice ? 'Multiple Choice' : currentQuestion.type === QuestionType.TrueFalse ? 'True / False' : 'Short Answer'}
+              {currentQuestion.type === QuestionType.MultipleChoice ? 'Single Select' : 
+               currentQuestion.type === QuestionType.MultipleSelect ? 'Multiple Select' :
+               currentQuestion.type === QuestionType.TrueFalse ? 'True / False' : 'Short Answer'}
             </span>
             <h2 className="text-2xl font-medium text-slate-100 leading-relaxed">
               {currentQuestion.question}
@@ -112,7 +137,36 @@ const ExamTaker: React.FC<ExamTakerProps> = ({ exam, onSubmit }) => {
           </div>
 
           <div className="space-y-4">
-            {(currentQuestion.type === QuestionType.MultipleChoice || currentQuestion.type === QuestionType.TrueFalse) ? (
+            {currentQuestion.type === QuestionType.MultipleSelect ? (
+              // Multi-select with checkboxes
+              <div className="grid grid-cols-1 gap-4">
+                <p className="text-sm text-slate-400 mb-2">Select all that apply:</p>
+                {(currentQuestion.options || []).map((option, idx) => {
+                  const currentAnswers = answers[currentQuestion.id];
+                  const answerArray = Array.isArray(currentAnswers) ? currentAnswers : [];
+                  const isSelected = answerArray.includes(option);
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => handleMultiSelectToggle(option)}
+                      className={`w-full text-left p-5 rounded-xl border transition-all duration-200 group flex items-center gap-4 ${
+                        isSelected 
+                          ? 'bg-indigo-600/10 border-indigo-500 text-indigo-100 shadow-inner' 
+                          : 'bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-800 hover:border-slate-600'
+                      }`}
+                    >
+                      <div className={`w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                        isSelected ? 'border-indigo-500 bg-indigo-500' : 'border-slate-500 group-hover:border-slate-400'
+                      }`}>
+                        {isSelected && <CheckCircle2 className="w-4 h-4 text-white" />}
+                      </div>
+                      <span className="text-lg">{option}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (currentQuestion.type === QuestionType.MultipleChoice || currentQuestion.type === QuestionType.TrueFalse) ? (
+              // Single-select with radio buttons
               <div className="grid grid-cols-1 gap-4">
                 {(() => {
                   // Determine options to display
