@@ -72,9 +72,8 @@ export const generateExamFromContent = async (contents: {name: string, content: 
     - Use 'multiple_choice' for questions with ONE correct answer from 4 options (single-select)
     - Use 'multiple_select' for questions with MULTIPLE correct answers from 4-6 options (multi-select)
     - Use 'true_false' for true/false questions
-    - Use 'short_answer' for essay/written response questions
     
-    The exam should include approximately 60 scored questions with a mix of question types.
+    The exam must include 60 scored questions with a mix of question types.
     
     CRITICAL REQUIREMENTS:
     - For 'multiple_choice' questions (SINGLE SELECT): 
@@ -90,10 +89,6 @@ export const generateExamFromContent = async (contents: {name: string, content: 
       * MUST set options to exactly ["True", "False"]
       * correctAnswer must be either "True" or "False"
     
-    - For 'short_answer' questions: 
-      * Leave options empty or omit it
-      * correctAnswer should be a grading rubric
-
     Assessed on this exam:
     - Domain 1: Responsible AI 7%
     - Domain 2: GitHub Copilot plans and features 31%
