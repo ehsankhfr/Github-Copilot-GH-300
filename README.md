@@ -130,8 +130,58 @@ git clone https://github.com/ehsankhfr/Github-Copilot-GH-300.git
 cd Github-Copilot-GH-300
 
 # Start with the introduction
-cat 01-introduction.md
+cat personal-notes/01-introduction.md
 ```
+
+## 🤖 Interactive Study Tool: ProtractAI
+
+This repository includes **ProtractAI** - an AI-powered interactive study assistant built with Google Gemini to help you prepare for the GH-300 exam!
+
+### Features
+- 🎯 Interactive Q&A about GitHub Copilot concepts
+- 📚 AI-powered explanations of exam topics
+- 💡 Practice question generation
+- 🔍 Deep dives into complex topics
+
+### How to Use ProtractAI
+
+1. **Navigate to the app directory:**
+   ```bash
+   cd protractai
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up your Gemini API key:**
+   - Get a free API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Copy `.env.example` to `.env`:
+     ```bash
+     cp .env.example .env
+     ```
+   - Edit `.env` and add your API key:
+     ```
+     GEMINI_API_KEY=your_api_key_here
+     ```
+
+4. **Start the app:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open in browser:**
+   - Navigate to `http://localhost:3000`
+   - Start asking questions about GitHub Copilot!
+
+### Example Questions to Try
+- "What are the differences between Copilot Individual, Business, and Enterprise?"
+- "Explain GitHub Copilot's security features"
+- "Generate practice questions about audit logging"
+- "What topics should I focus on for the GH-300 exam?"
+
+[View ProtractAI README](./protractai/README.md) for more details.
 
 ## 📖 Study Recommendations
 
