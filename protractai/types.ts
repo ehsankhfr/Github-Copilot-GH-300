@@ -8,6 +8,7 @@ export interface RepoFile {
 
 export enum QuestionType {
   MultipleChoice = 'multiple_choice',
+  MultipleSelect = 'multiple_select',
   ShortAnswer = 'short_answer',
   TrueFalse = 'true_false'
 }
@@ -16,8 +17,8 @@ export interface Question {
   id: number;
   type: QuestionType;
   question: string;
-  options?: string[]; // Only for multiple_choice
-  correctAnswer: string; // For MC/TF this is the exact string. For ShortAnswer, this is the grading rubric/key points.
+  options?: string[]; // For multiple_choice, multiple_select, and true_false
+  correctAnswer: string | string[]; // String for MC/TF/SA, string array for MultipleSelect
   explanation?: string;
 }
 
@@ -29,7 +30,7 @@ export interface Exam {
 
 export interface UserAnswer {
   questionId: number;
-  answer: string;
+  answer: string | string[]; // String for single answer, array for multi-select
   isCorrect?: boolean; // For MC/TF auto-grading
   feedback?: string; // AI feedback for short answers
   score?: number; // 0-100 confidence score

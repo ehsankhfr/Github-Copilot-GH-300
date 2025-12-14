@@ -17,14 +17,16 @@ const examSchema = {
         type: Type.OBJECT,
         properties: {
           id: { type: Type.INTEGER },
-          type: { type: Type.STRING, enum: [QuestionType.MultipleChoice, QuestionType.ShortAnswer, QuestionType.TrueFalse] },
+          type: { type: Type.STRING, enum: [QuestionType.MultipleChoice, QuestionType.MultipleSelect, QuestionType.ShortAnswer, QuestionType.TrueFalse] },
           question: { type: Type.STRING },
           options: { 
             type: Type.ARRAY, 
             items: { type: Type.STRING },
-            description: "For multiple_choice: provide 4 options. For true_false: must be exactly ['True', 'False']. For short_answer: leave empty or omit."
+            description: "For multiple_choice/multiple_select: provide 4-6 options. For true_false: must be exactly ['True', 'False']. For short_answer: leave empty or omit."
           },
-          correctAnswer: { type: Type.STRING, description: "The correct option for MC/TF, or a grading key/rubric for Short Answer." },
+          correctAnswer: { 
+            description: "For multiple_choice/true_false: single string. For multiple_select: array of correct option strings. For short_answer: grading rubric."
+          },
           explanation: { type: Type.STRING, description: "Explanation of why the answer is correct." }
         },
         required: ["id", "type", "question", "correctAnswer"]
@@ -67,16 +69,22 @@ export const generateExamFromContent = async (contents: {name: string, content: 
     Random seed: ${randomSeed}
     
     Question Type Guidelines:
-    - Use 'multiple_choice' for questions with ONE correct answer from 4 options
+    - Use 'multiple_choice' for questions with ONE correct answer from 4 options (single-select)
+    - Use 'multiple_select' for questions with MULTIPLE correct answers from 4-6 options (multi-select)
     - Use 'true_false' for true/false questions
     - Use 'short_answer' for essay/written response questions
     
     The exam should include approximately 60 scored questions with a mix of question types.
     
     CRITICAL REQUIREMENTS:
-    - For 'multiple_choice' questions: 
+    - For 'multiple_choice' questions (SINGLE SELECT): 
       * Provide exactly 4 options in the options array
       * correctAnswer must be a single string matching one of the options
+    
+    - For 'multiple_select' questions (MULTIPLE ANSWERS): 
+      * Provide 4-6 options in the options array
+      * correctAnswer must be an array of strings, each matching options that are correct
+      * There must be at least 2 correct answers
     
     - For 'true_false' questions: 
       * MUST set options to exactly ["True", "False"]
