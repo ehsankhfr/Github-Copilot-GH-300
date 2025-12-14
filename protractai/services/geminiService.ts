@@ -55,10 +55,16 @@ export const generateExamFromContent = async (contents: {name: string, content: 
     combinedContext += `--- FILE: ${file.name} ---\n${file.content}\n\n`;
   });
 
+  // Add randomization to prevent identical exams
+  const randomSeed = Date.now();
+  
   const prompt = `
     You are an expert professor and exam proctor. 
     Analyze the following markdown notes from a repository.
     Create a comprehensive exam to test a student's understanding of the core concepts, syntax, and logic presented in these files.
+    
+    IMPORTANT: Generate UNIQUE and VARIED questions. Each exam should have different questions covering the same concepts.
+    Random seed: ${randomSeed}
     
     Question Type Guidelines:
     - Use 'multiple_choice' for questions with ONE correct answer from 4 options
@@ -90,6 +96,7 @@ export const generateExamFromContent = async (contents: {name: string, content: 
     - Domain 7: Privacy fundamentals and context exclusions 15%
     
     Ensure the questions are challenging but fair based ONLY on the provided text.
+    Vary question phrasing, examples, and focus areas to create a unique exam each time.
   `;
 
   try {
@@ -101,7 +108,7 @@ export const generateExamFromContent = async (contents: {name: string, content: 
       config: {
         responseMimeType: "application/json",
         responseSchema: examSchema,
-        temperature: 0.3, // Lower temperature for more factual questions
+        temperature: 0.8, // Higher temperature for more varied questions while staying coherent
       }
     });
 
