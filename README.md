@@ -54,23 +54,23 @@ The `/course/` folder contains **transformed Microsoft Learn modules** with prac
 ### 🛠️ Hands-On Course Materials
 
 #### Part 1: Fundamentals (9 Modules)
-1. [Responsible AI with GitHub Copilot](./course/part-1/01.md) - AI risks, responsible usage, ethical considerations
-2. [Introduction to GitHub Copilot](./course/part-1/02.md) - Basic features, setup, configuration
-3. [Using GitHub Copilot with Visual Studio Code](./course/part-1/03.md) - VS Code integration and workflows
-4. [Using GitHub Copilot Extensions](./course/part-1/04.md) - Extension marketplace and custom extensions
-5. [Using Advanced GitHub Copilot Features](./course/part-1/05.md) - Chat, slash commands, agents
-6. [GitHub Copilot Free](./course/part-1/06.md) - Free tier features and limitations
-7. [GitHub Copilot Chat](./course/part-1/07.md) - Chat interface, context, and conversations
-8. [Refactoring Code with GitHub Copilot](./course/part-1/08.md) - Code improvement and optimization
-9. [Challenging Projects with GitHub Copilot](./course/part-1/09.md) - Complex project workflows
+1. [Responsible AI with GitHub Copilot](./ms-course/part-1/01.md) - AI risks, responsible usage, ethical considerations
+2. [Introduction to GitHub Copilot](./ms-course/part-1/02.md) - Basic features, setup, configuration
+3. [Using GitHub Copilot with Visual Studio Code](./ms-course/part-1/03.md) - VS Code integration and workflows
+4. [Using GitHub Copilot Extensions](./ms-course/part-1/04.md) - Extension marketplace and custom extensions
+5. [Using Advanced GitHub Copilot Features](./ms-course/part-1/05.md) - Chat, slash commands, agents
+6. [GitHub Copilot Free](./ms-course/part-1/06.md) - Free tier features and limitations
+7. [GitHub Copilot Chat](./ms-course/part-1/07.md) - Chat interface, context, and conversations
+8. [Refactoring Code with GitHub Copilot](./ms-course/part-1/08.md) - Code improvement and optimization
+9. [Challenging Projects with GitHub Copilot](./ms-course/part-1/09.md) - Complex project workflows
 
 #### Part 2: Advanced Topics (6 Modules)
-1. [Building Applications with Agent Mode](./course/part-2/01.md) - Autonomous development assistance
-2. [Copilot Coding Agent](./course/part-2/02.md) - GitHub integration, PRUs, security
-3. [Introduction to MCP Server](./course/part-2/03.md) - Model Context Protocol integration
-4. [Code Reviews with Copilot](./course/part-2/04.md) - PR reviews, automation, rulesets
-5. [Using Copilot with JavaScript](./course/part-2/05.md) - JavaScript development and Codespaces
-6. [Using Copilot with Python](./course/part-2/06.md) - Python FastAPI development
+1. [Building Applications with Agent Mode](./ms-course/part-2/01.md) - Autonomous development assistance
+2. [Copilot Coding Agent](./ms-course/part-2/02.md) - GitHub integration, PRUs, security
+3. [Introduction to MCP Server](./ms-course/part-2/03.md) - Model Context Protocol integration
+4. [Code Reviews with Copilot](./ms-course/part-2/04.md) - PR reviews, automation, rulesets
+5. [Using Copilot with JavaScript](./ms-course/part-2/05.md) - JavaScript development and Codespaces
+6. [Using Copilot with Python](./ms-course/part-2/06.md) - Python FastAPI development
 
 Each course module includes:
 - ✅ Clean, structured content
